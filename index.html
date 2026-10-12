@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ro"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Planner">
+<title>Planner</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#e8749a">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{--bg:#fbf7f5;--card:#fff;--tx:#2d2428;--mu:#8c7f85;--ln:#efe5e6;--ac:#e8749a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171316;--card:#221c20;--tx:#f3eaee;--mu:#9d9095;--ln:#372d33}}
+:root[data-theme="dark"]{--bg:#171316;--card:#221c20;--tx:#f3eaee;--mu:#9d9095;--ln:#372d33}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.3 -apple-system,system-ui,"Segoe UI",sans-serif}
+#app{display:flex;flex-direction:column;height:100%}
+header{display:flex;align-items:center;gap:8px;padding:10px 14px;flex-wrap:wrap}
+h1{font-size:21px;margin:0;flex:1;min-width:160px;font-weight:650}
+button,select,input,textarea{font:inherit;color:inherit}
+.b{border:1px solid var(--ln);background:var(--card);border-radius:10px;padding:8px 13px;cursor:pointer}
+.b.p{background:var(--ac);border-color:var(--ac);color:#fff}
+.seg{display:flex}.seg .b{border-radius:0}.seg .b:first-child{border-radius:10px 0 0 10px}.seg .b:last-child{border-radius:0 10px 10px 0}
+.seg .b.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+#main{flex:1;min-height:0;overflow:auto}
+.mg{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:28px repeat(6,minmax(92px,1fr));min-height:100%}
+.dh{text-align:center;font-size:12px;color:var(--mu);padding-top:6px}
+.c{border-top:1px solid var(--ln);border-left:1px solid var(--ln);padding:3px;overflow:hidden;cursor:pointer;min-width:0}
+.c b{font-size:13px;display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;font-weight:550}
+.c.t b{background:var(--ac);color:#fff}.c.o{opacity:.4}
+.c i{font-size:11px;color:var(--mu);font-style:normal}
+.ch{color:#fff;border-radius:6px;padding:2px 6px;margin-top:2px;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.ch.fd{opacity:.5;text-decoration:line-through}
+.gw{--n:7}
+.gh,.ga,.gb{display:grid;grid-template-columns:44px repeat(var(--n),1fr)}
+.gh{position:sticky;top:0;z-index:4;background:var(--bg);border-bottom:1px solid var(--ln)}
+.ga{position:sticky;top:48px;z-index:3;background:var(--bg);border-bottom:1px solid var(--ln);min-height:26px}
+.gd{text-align:center;padding:6px 0;cursor:pointer;height:48px;color:var(--mu);font-size:12px}
+.gd b{display:block;font-size:17px;color:var(--tx)}.gd.t b{color:var(--ac)}
+.gu{font-size:10px;color:var(--mu);text-align:right;padding:2px 6px 0 0}
+.gc{border-left:1px solid var(--ln);padding:2px;min-width:0}
+.col{position:relative;border-left:1px solid var(--ln);background-image:linear-gradient(var(--ln) 1px,transparent 1px);background-size:100% 52px;min-width:0}
+.ev{position:absolute;padding:3px 5px;font-size:11.5px;line-height:1.2;overflow:hidden;white-space:normal;border-left:3px solid rgba(0,0,0,.25);margin:0}
+.nl{position:absolute;left:0;right:0;height:2px;background:#e53935;z-index:2;pointer-events:none}
+.mb{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:14px;z-index:20}
+.md{background:var(--card);border-radius:18px;padding:18px;width:100%;max-width:440px;max-height:100%;overflow:auto}
+.md label{display:block;font-size:12px;color:var(--mu);margin:10px 0 3px}
+.md input:not([type="checkbox"]):not([type="color"]),.md select,.md textarea{width:100%;padding:9px;border:1px solid var(--ln);border-radius:10px;background:var(--bg)}
+.r{display:flex;gap:8px;align-items:center}.r>*{flex:1}
+.sw{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sw span{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid transparent}
+.sw span.on{border-color:var(--tx)}
+input[type="color"]{width:34px;height:30px;padding:0;border:0;background:none}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:#333;color:#fff;padding:10px 16px;border-radius:12px;z-index:30;display:none;gap:12px;align-items:center}
+#toast u{cursor:pointer;color:#ffb3cb}
+.yg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;padding:6px 14px 20px}
+.ym{background:var(--card);border-radius:14px;padding:10px}
+.yt{display:block;margin-bottom:6px;cursor:pointer}
+.y7{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:11px}
+.y7 i{color:var(--mu);font-style:normal}
+.yd{border-radius:50%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.yd.t{outline:2px solid var(--ac)}
+.td{margin:0 14px 10px;background:var(--card);border-radius:14px;padding:10px 12px}
+.tr{margin:4px 0}.tr>span{flex:1}.tr>u{flex:0;cursor:pointer;color:var(--mu);text-decoration:none}
+.tr input[type="checkbox"]{flex:0 0 20px;width:20px;height:20px;accent-color:var(--ac)}
+.td input:not([type="checkbox"]){width:100%;padding:8px;border:1px solid var(--ln);border-radius:10px;background:var(--bg)}
+.fd2{text-decoration:line-through;color:var(--mu)}
+.ev{touch-action:none;user-select:none;-webkit-user-select:none}
+.rz{position:absolute;left:0;right:0;bottom:0;height:12px;cursor:ns-resize}
+.rz::after{content:"";position:absolute;left:35%;right:35%;bottom:3px;height:3px;border-radius:2px;background:rgba(255,255,255,.7)}
+</style></head>
+<body><div id="app">
+<header>
+<h1 id="ttl"></h1>
+<div class="seg"><button class="b" id="pv">‹</button><button class="b" id="td">Azi</button><button class="b" id="nx">›</button></div>
+<div class="seg" id="vs"><button class="b" data-v="month">Lună</button><button class="b" data-v="week">Săptămână</button><button class="b" data-v="day">Zi</button><button class="b" data-v="year">An</button></div>
+<button class="b p" id="add">+ Nou</button><button class="b" id="sr">🔍</button><button class="b" id="sa">📊</button><button class="b" id="st">⚙</button>
+</header>
+<div id="fb"></div>
+<div id="main"></div>
+</div><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),H=52;
+const MO=['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie'];
+const DN=['Lun','Mar','Mie','Joi','Vin','Sâm','Dum'];
+const PAL=['#e8749a','#f08a5d','#e0a800','#4caf7d','#26a69a','#4a9ae0','#7e7fe0','#b46fd6','#8d6e63','#607d8b'];
+let S={events:[],trash:[],todos:[],cats:[{id:'c1',name:'Școală',color:'#4a9ae0'},{id:'c2',name:'Sală',color:'#4caf7d'},{id:'c3',name:'Familie',color:'#e8749a'},{id:'c4',name:'Muncă',color:'#7e7fe0'}],set:{ac:'#e8749a',h0:6,h1:23,theme:'auto',font:'sys'}};
+try{const r=localStorage.getItem('planner_v1')||localStorage.getItem('planner_v1_prev');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+function save(){try{const p=localStorage.getItem('planner_v1');if(p)localStorage.setItem('planner_v1_prev',p);localStorage.setItem('planner_v1',JSON.stringify(S))}catch(e){toast('Nu s-a putut salva. Fă un backup din ⚙.')}}
+const pad=n=>String(n).padStart(2,'0'),ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const pd=s=>{const a=s.split('-');return new Date(a[0],a[1]-1,a[2])},addD=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const mins=t=>{const a=t.split(':');return a[0]*60+ +a[1]};
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let cur=new Date(),view='month',fc=null;
+function toast(m,fn){const t=$('#toast');t.innerHTML='<span>'+m+'</span>'+(fn?'<u>Anulează</u>':'');t.style.display='flex';if(fn)t.querySelector('u').onclick=()=>{fn();t.style.display='none'};clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',6000)}
+function occ(ds){const d=pd(ds);return S.events.filter(e=>{if(e.date>ds||(fc&&e.cat!=fc))return false;const o=pd(e.date);switch(e.rep){case'd':return true;case'w':return o.getDay()==d.getDay();case'm':return o.getDate()==d.getDate();case'y':return o.getDate()==d.getDate()&&o.getMonth()==d.getMonth();default:return e.date==ds}}).sort((a,b)=>(a.allDay?'':a.start).localeCompare(b.allDay?'':b.start))}
+const wk=d=>{const x=addD(d,-((d.getDay()+6)%7));return[0,1,2,3,4,5,6].map(i=>addD(x,i))};
+function chip(e,k){return`<div class="ch ${(e.done||[]).includes(k)?'fd':''}" data-e="${e.id}" data-d="${k}" style="background:${e.color}">${e.allDay?'':e.start+' '}${esc(e.title)}</div>`}
+function month(){const f=new Date(cur.getFullYear(),cur.getMonth(),1),s=addD(f,-((f.getDay()+6)%7)),T=ymd(new Date());
+let h='<div class="mg">'+DN.map(x=>`<div class="dh">${x}</div>`).join('');
+for(let i=0;i<42;i++){const d=addD(s,i),k=ymd(d),ev=occ(k);h+=`<div class="c ${d.getMonth()!=cur.getMonth()?'o':''} ${k==T?'t':''}" data-d="${k}"><b>${d.getDate()}</b>`+ev.slice(0,3).map(e=>chip(e,k)).join('')+(tc(k)?'<i>☑'+tc(k)+' </i>':'')+(ev.length>3?`<i>+${ev.length-3} altele</i>`:'')+'</div>'}
+return h+'</div>'}
+function grid(days){const a=S.set.h0,b=S.set.h1,T=ymd(new Date()),now=new Date(),nm=now.getHours()*60+now.getMinutes();
+let h=`<div class="gw" style="--n:${days.length}"><div class="gh"><div></div>`+days.map(d=>`<div class="gd ${ymd(d)==T?'t':''}" data-d="${ymd(d)}">${DN[(d.getDay()+6)%7]}<b>${d.getDate()}</b></div>`).join('')+'</div>';
+h+='<div class="ga"><div class="gu">toată ziua</div>'+days.map(d=>{const k=ymd(d);return'<div class="gc">'+occ(k).filter(e=>e.allDay).map(e=>chip(e,k)).join('')+'</div>'}).join('')+'</div>';
+h+='<div class="gb"><div>';for(let i=a;i<=b;i++)h+=`<div class="gu" style="height:${H}px">${pad(i)}:00</div>`;h+='</div>';
+days.forEach(d=>{const k=ymd(d),L=[];
+const ev=occ(k).filter(e=>!e.allDay).map(e=>{const s=mins(e.start),en=Math.max(mins(e.end||e.start),s+30);let l=0;while(L[l]>s)l++;L[l]=en;return{e,s,en,l}}),n=Math.max(1,L.length);
+h+=`<div class="col" data-d="${k}" style="height:${(b-a+1)*H}px">`+ev.map(o=>`<div class="ev ch ${(o.e.done||[]).includes(k)?'fd':''}" data-e="${o.e.id}" data-d="${k}" style="top:${(o.s-a*60)/60*H}px;height:${(o.en-o.s)/60*H-2}px;left:${o.l*100/n}%;width:${100/n}%;background:${o.e.color}"><b>${esc(o.e.title)}</b><br>${o.e.start}–${o.e.end||''}${o.e.place?' · '+esc(o.e.place):''}<i class="rz"></i></div>`).join('')+(k==T?`<div class="nl" style="top:${(nm-a*60)/60*H}px"></div>`:'')+'</div>'});
+return h+'</div></div>'}
+function render(){
+window._st=$('#main').scrollTop;theme();fbar();
+let t;if(view=='year')t=cur.getFullYear();else if(view=='month')t=MO[cur.getMonth()]+' '+cur.getFullYear();
+else if(view=='week'){const w=wk(cur),x=w[0],y=w[6];t=x.getDate()+' '+MO[x.getMonth()].slice(0,3)+' – '+y.getDate()+' '+MO[y.getMonth()].slice(0,3)+' '+y.getFullYear()}
+else t=DN[(cur.getDay()+6)%7]+', '+cur.getDate()+' '+MO[cur.getMonth()]+' '+cur.getFullYear();
+$('#ttl').textContent=t;
+document.querySelectorAll('#vs .b').forEach(b=>b.classList.toggle('on',b.dataset.v==view));
+$('#main').innerHTML=view=='year'?year():view=='month'?month():(view=='day'?todos(ymd(cur)):'')+grid(view=='week'?wk(cur):[cur]);
+const sk=view+ymd(cur);if(view=='week'||view=='day'){$('#main').scrollTop=window._sk!=sk?Math.max(0,(new Date().getHours()-1-S.set.h0)*H):window._st}else if(window._sk!=sk)$('#main').scrollTop=0;window._sk=sk}
+function nav(n){if(view=='year')cur=new Date(cur.getFullYear()+n,0,1);else if(view=='month')cur=new Date(cur.getFullYear(),cur.getMonth()+n,1);else cur=addD(cur,view=='week'?7*n:n);render()}
+$('#pv').onclick=()=>nav(-1);$('#nx').onclick=()=>nav(1);$('#td').onclick=()=>{cur=new Date();render()};
+$('#vs').onclick=e=>{if(e.target.dataset.v){view=e.target.dataset.v;render()}};
+$('#add').onclick=()=>edit(null,ymd(cur));$('#st').onclick=()=>settings();
+$('#main').onclick=e=>{if(window._dg||mc(e))return;const c=e.target.closest('[data-e]');if(c)return edit(c.dataset.e,c.dataset.d);
+const col=e.target.closest('.col');if(col){const r=col.getBoundingClientRect(),m=S.set.h0*60+Math.floor((e.clientY-r.top)/H*2)*30;return edit(null,col.dataset.d,pad(Math.floor(m/60))+':'+pad(m%60))}
+const g=e.target.closest('.gd,.c');if(g){cur=pd(g.dataset.d);view='day';render()}};
+let tx,ty;$('#main').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+$('#main').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(!window._dg&&Math.abs(dx)>80&&Math.abs(dx)>Math.abs(dy)*2)nav(dx<0?1:-1)},{passive:true});
+function modal(h){const m=document.createElement('div');m.className='mb';m.innerHTML='<div class="md">'+h+'</div>';m.onclick=e=>{if(e.target==m)m.remove()};document.body.appendChild(m);return m}
+function sw(id,c){return`<div class="sw" id="${id}">`+PAL.map(x=>`<span data-c="${x}" style="background:${x}" class="${x==c?'on':''}"></span>`).join('')+`<input type="color" value="${c}"></div>`}
+function bindSw(m,id,cb){const w=m.querySelector('#'+id),ci=w.querySelector('input');const pick=c=>{w.querySelectorAll('span').forEach(s=>s.classList.toggle('on',s.dataset.c==c));ci.value=c;cb(c)};w.onclick=e=>{if(e.target.dataset.c)pick(e.target.dataset.c)};ci.oninput=e=>pick(e.target.value)}
+function edit(id,od,st){
+const n=!id,e=n?{title:'',date:od,start:st||'09:00',end:st?pad((+st.slice(0,2)+1)%24)+':'+st.slice(3):'10:00',allDay:false,color:PAL[0],notes:'',place:'',rep:'',done:[]}:{...S.events.find(x=>x.id==id)};
+e.done=e.done||[];let col=e.color;
+const m=modal(`<h3 style="margin:0">${n?'Eveniment nou':'Editează evenimentul'}</h3>
+<label>Titlu</label><input id="t" value="${esc(e.title)}" placeholder="Ce ai de făcut?">
+<label>${e.rep?'Prima dată':'Data'}</label><input id="d" type="date" value="${e.date}">
+<label><input id="ad" type="checkbox" ${e.allDay?'checked':''}> Toată ziua</label>
+<div class="r" id="tm"><div><label>De la</label><input id="s" type="time" value="${e.start}"></div><div><label>Până la</label><input id="en" type="time" value="${e.end}"></div></div>
+<label>Repetare</label><select id="rp">${[['','Fără'],['d','În fiecare zi'],['w','În fiecare săptămână'],['m','În fiecare lună'],['y','În fiecare an']].map(x=>`<option value="${x[0]}" ${x[0]==e.rep?'selected':''}>${x[1]}</option>`).join('')}</select>
+<label>Loc</label><input id="pl" value="${esc(e.place)}">
+<label>Notițe</label><textarea id="nt" rows="3">${esc(e.notes)}</textarea>
+<label>Categorie</label><select id="ct">${catopts(e.cat)}</select><label>Culoare</label>${sw('sc',col)}
+${n?'':`<label><input id="dn" type="checkbox" ${e.done.includes(od)?'checked':''}> Făcut (${od})</label>`}
+<div class="r" style="margin-top:16px">${n?'':'<button class="b" id="del">Șterge</button>'}<button class="b" id="x">Anulează</button><button class="b p" id="ok">Salvează</button></div>`);
+const v=k=>m.querySelector('#'+k),tg=()=>v('tm').style.display=v('ad').checked?'none':'';
+v('ad').onchange=tg;tg();bindSw(m,'sc',c=>col=c);v('ct').onchange=()=>{const c=S.cats.find(x=>x.id==v('ct').value);if(c){col=c.color;m.querySelector('#sc input').value=col;m.querySelectorAll('#sc span').forEach(z=>z.classList.toggle('on',z.dataset.c==col))}};v('x').onclick=()=>m.remove();
+v('ok').onclick=()=>{const o={id:e.id||Math.random().toString(36).slice(2)+Date.now().toString(36),title:v('t').value.trim()||'Fără titlu',date:v('d').value||e.date,allDay:v('ad').checked,start:v('s').value||'09:00',end:v('en').value||'10:00',rep:v('rp').value,place:v('pl').value.trim(),notes:v('nt').value.trim(),color:col,cat:v('ct').value,done:e.done};
+if(!n){o.done=o.done.filter(x=>x!=od);if(v('dn').checked)o.done.push(od)}
+if(n)S.events.push(o);else S.events[S.events.findIndex(x=>x.id==o.id)]=o;save();m.remove();render()};
+if(!n)v('del').onclick=()=>{const i=S.events.findIndex(x=>x.id==e.id),r=S.events.splice(i,1)[0];S.trash.push({...r,del:Date.now()});save();m.remove();render();
+toast(e.rep?'Seria a fost mutată în Coș':'Mutat în Coș',()=>{S.trash=S.trash.filter(x=>x.id!=r.id);S.events.push(r);save();render()})}}
+function settings(){
+const m=modal(`<h3 style="margin:0">Setări</h3><label>Culoarea aplicației</label>${sw('ac',S.set.ac)}
+<div class="r"><div><label>Ziua începe la ora</label><input id="h0" type="number" min="0" max="12" value="${S.set.h0}"></div><div><label>Ziua se termină la ora</label><input id="h1" type="number" min="13" max="23" value="${S.set.h1}"></div></div>
+<label>Backup: copiază textul și păstrează-l (notițe, mail). Pentru a reveni, lipește-l aici și apasă Importă.</label><textarea id="bk" rows="3"></textarea>
+<div class="r" style="margin-top:6px"><button class="b" id="cp">Copiază backup</button><button class="b" id="im">Importă (adaugă)</button></div>
+<label>Coș (${S.trash.length})</label><div id="tr"></div>
+<button class="b p" id="cl" style="width:100%;margin-top:14px">Gata</button>`);
+const v=k=>m.querySelector('#'+k);v('bk').value=JSON.stringify({events:S.events,trash:S.trash,set:S.set,todos:S.todos,cats:S.cats});
+bindSw(m,'ac',c=>{S.set.ac=c;document.documentElement.style.setProperty('--ac',c)});setx(m);
+v('cp').onclick=()=>{v('bk').select();try{navigator.clipboard.writeText(v('bk').value);toast('Copiat')}catch(e){document.execCommand('copy')}};
+v('im').onclick=()=>{try{const j=JSON.parse(v('bk').value);let c=0;(j.events||[]).forEach(x=>{const i=S.events.findIndex(y=>y.id==x.id);if(i<0){S.events.push(x);c++}});(j.todos||[]).forEach(x=>{if(!S.todos.some(y=>y.id==x.id)){S.todos.push(x);c++}});(j.cats||[]).forEach(x=>{if(!S.cats.some(y=>y.id==x.id))S.cats.push(x)});save();render();toast(c+' elemente adăugate')}catch(e){toast('Text de backup invalid')}};
+const tr=()=>{v('tr').innerHTML=S.trash.map(x=>`<div class="r" style="margin:4px 0"><span>${esc(x.title)} (${x.date})</span><button class="b" data-r="${x.id}">Restaurează</button></div>`).join('')||'<span style="color:var(--mu)">Gol</span>'};tr();
+v('tr').onclick=e=>{const id=e.target.dataset.r;if(!id)return;const x=S.trash.find(y=>y.id==id);S.trash=S.trash.filter(y=>y.id!=id);delete x.del;S.events.push(x);save();tr();render()};
+v('cl').onclick=()=>{let a=Math.min(12,Math.max(0,+v('h0').value||0)),b=Math.min(23,Math.max(13,+v('h1').value||23));S.set.h0=a;S.set.h1=b;save();m.remove();render()}}
+S.set=Object.assign({ac:'#e8749a',h0:6,h1:23,theme:'auto',font:'sys'},S.set);
+{const T0=ymd(new Date());S.todos.forEach(t=>{if(!t.done&&!t.x&&t.date<T0)t.date=T0})}
+const TH={roz:{bg:'#fbf7f5',card:'#fff',tx:'#2d2428',mu:'#8c7f85',ln:'#efe5e6'},noapte:{bg:'#171316',card:'#221c20',tx:'#f3eaee',mu:'#9d9095',ln:'#372d33'},salvie:{bg:'#f3f7f2',card:'#fff',tx:'#232b24',mu:'#76857a',ln:'#e1ebe0'},lavanda:{bg:'#f6f4fb',card:'#fff',tx:'#27233a',mu:'#827e9a',ln:'#e8e4f3'},minimal:{bg:'#fff',card:'#fff',tx:'#111',mu:'#777',ln:'#e5e5e5'}};
+const FT={sys:'-apple-system,system-ui,"Segoe UI",sans-serif',rot:'ui-rounded,"SF Pro Rounded",system-ui,sans-serif',ser:'Georgia,"Times New Roman",serif',eleg:'"Didot","Bodoni 72",Georgia,serif',mono:'ui-monospace,Menlo,monospace'};
+function theme(){const r=document.documentElement.style,t=TH[S.set.theme];['bg','card','tx','mu','ln'].forEach(k=>t?r.setProperty('--'+k,t[k]):r.removeProperty('--'+k));r.setProperty('--ac',S.set.ac);document.body.style.fontFamily=FT[S.set.font]||FT.sys}
+const catopts=s=>'<option value="">Fără categorie</option>'+S.cats.map(c=>`<option value="${c.id}" ${c.id==s?'selected':''}>${esc(c.name)}</option>`).join('');
+function fbar(){$('#fb').innerHTML='<div style="display:flex;gap:6px;padding:0 14px 8px;overflow-x:auto">'+[{id:'',name:'Toate',color:'#999'}].concat(S.cats).map(c=>`<button class="b" data-f="${c.id}" style="white-space:nowrap;${(fc||'')==c.id?`background:${c.color};color:#fff;border-color:${c.color}`:`border-left:4px solid ${c.color}`}">${esc(c.name)}</button>`).join('')+'</div>'}
+$('#fb').onclick=e=>{const b=e.target.closest('[data-f]');if(b){fc=b.dataset.f||null;render()}};
+const tc=k=>S.todos.filter(t=>t.date==k&&!t.done&&!t.x).length;
+function todos(k){return'<div class="td"><b>De făcut</b>'+S.todos.filter(t=>t.date==k&&!t.x).map(t=>`<div class="r tr"><input type="checkbox" data-t="${t.id}" ${t.done?'checked':''}><span class="${t.done?'fd2':''}">${esc(t.text)}</span><u data-x="${t.id}">✕</u></div>`).join('')+'<div class="r" style="margin-top:6px"><input id="tn" placeholder="Adaugă o sarcină…"><button class="b" id="ta" style="flex:0">+</button></div></div>'}
+function addT(){const i=$('#tn'),t=i.value.trim();if(!t)return;S.todos.push({id:Math.random().toString(36).slice(2),text:t,date:ymd(cur),done:false});save();render();$('#tn').focus()}
+$('#main').addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.id=='tn')addT()});
+function mc(e){const d=e.target.dataset;
+if(d.t){const x=S.todos.find(y=>y.id==d.t);x.done=!x.done;save();render();return 1}
+if(d.x){const x=S.todos.find(y=>y.id==d.x);x.x=1;save();render();toast('Sarcină ștearsă',()=>{x.x=0;save();render()});return 1}
+if(e.target.id=='ta'){addT();return 1}
+const y=e.target.closest('.yd');if(y){cur=pd(y.dataset.d);view='day';render();return 1}
+const m=e.target.closest('.yt');if(m){cur=new Date(cur.getFullYear(),+m.dataset.m,1);view='month';render();return 1}}
+function year(){const Y=cur.getFullYear(),T=ymd(new Date());let h='<div class="yg">';
+for(let m=0;m<12;m++){const s0=addD(new Date(Y,m,1),-((new Date(Y,m,1).getDay()+6)%7));h+=`<div class="ym"><b class="yt" data-m="${m}">${MO[m]}</b><div class="y7">`+DN.map(x=>`<i>${x[0]}</i>`).join('');
+for(let i=0;i<42;i++){const d=addD(s0,i);if(d.getMonth()!=m){h+='<span></span>';continue}const k=ymd(d),ev=occ(k),c=ev[0]?ev[0].color:'';h+=`<span class="yd ${k==T?'t':''}" data-d="${k}" style="${c?'background:'+c+';color:#fff':''}">${d.getDate()}</span>`}
+h+='</div></div>'}return h+'</div>'}
+function stats(){const m=modal('<h3 style="margin:0">Statistici (ore planificate)</h3><select id="sr2" style="margin:8px 0"><option value="w">Săptămâna asta</option><option value="m">Luna asta</option><option value="y">Anul acesta</option></select><div id="so"></div><button class="b p" id="sx" style="width:100%;margin-top:12px">Gata</button>');
+const go=()=>{const r=m.querySelector('#sr2').value,n=new Date();let a,b;if(r=='w'){a=wk(n)[0];b=addD(a,6)}else if(r=='m'){a=new Date(n.getFullYear(),n.getMonth(),1);b=new Date(n.getFullYear(),n.getMonth()+1,0)}else{a=new Date(n.getFullYear(),0,1);b=new Date(n.getFullYear(),11,31)}
+const T={},sv=fc;fc=null;for(let d=a;d<=b;d=addD(d,1))occ(ymd(d)).forEach(e=>{if(e.allDay)return;const h=Math.max(0,mins(e.end||e.start)-mins(e.start))/60,k=e.cat||'';T[k]=(T[k]||0)+h});fc=sv;
+const R=Object.entries(T).sort((x,y)=>y[1]-x[1]),mx=Math.max(1,...R.map(x=>x[1]));
+m.querySelector('#so').innerHTML=R.map(([k,h])=>{const c=S.cats.find(x=>x.id==k)||{name:'Fără categorie',color:'#999'};return`<div style="margin:8px 0"><div class="r"><span>${esc(c.name)}</span><span style="text-align:right;flex:0 0 auto">${h.toFixed(1)} h</span></div><div style="height:10px;border-radius:5px;background:var(--ln)"><div style="height:10px;border-radius:5px;width:${h/mx*100}%;background:${c.color}"></div></div></div>`}).join('')||'<span style="color:var(--mu)">Nicio oră planificată în perioada asta.</span>'};
+m.querySelector('#sr2').onchange=go;m.querySelector('#sx').onclick=()=>m.remove();go()}
+$('#sa').onclick=stats;
+function search(){const m=modal('<h3 style="margin:0">Căutare</h3><input id="q" placeholder="Titlu, loc sau notițe…" style="margin-top:10px"><div id="qr" style="margin-top:10px"></div><button class="b" id="qx" style="width:100%;margin-top:10px">Închide</button>');
+const q=m.querySelector('#q');q.focus();q.oninput=()=>{const s=q.value.toLowerCase().trim();if(!s){m.querySelector('#qr').innerHTML='';return}
+const A=S.events.filter(e=>(e.title+' '+e.place+' '+e.notes).toLowerCase().includes(s)).map(e=>({d:e.date,t:e.title,c:e.color,x:(e.allDay?'':e.start+' ')+e.date})).concat(S.todos.filter(t=>!t.x&&t.text.toLowerCase().includes(s)).map(t=>({d:t.date,t:'☑ '+t.text,c:'#999',x:t.date})));
+m.querySelector('#qr').innerHTML=A.sort((a,b)=>b.d.localeCompare(a.d)).slice(0,40).map(o=>`<div class="r" data-j="${o.d}" style="padding:8px;border-left:5px solid ${o.c};background:var(--bg);border-radius:8px;margin:5px 0;cursor:pointer"><span>${esc(o.t)}</span><span style="flex:0 0 auto;color:var(--mu);font-size:12px">${o.x}</span></div>`).join('')||'<span style="color:var(--mu)">Nimic găsit.</span>'};
+m.onclick=e=>{if(e.target==m)m.remove();const j=e.target.closest('[data-j]');if(j){cur=pd(j.dataset.j);view='day';m.remove();render()}};m.querySelector('#qx').onclick=()=>m.remove()}
+$('#sr').onclick=search;
+function setx(m){const o=(O,s)=>Object.entries(O).map(([k,v])=>`<option value="${k}" ${k==s?'selected':''}>${v}</option>`).join('');
+const h=document.createElement('div');h.innerHTML=`<label>Temă</label><select id="th">${o({auto:'Automat',roz:'Roz pastel',salvie:'Salvie',lavanda:'Lavandă',minimal:'Minimal alb',noapte:'Noapte'},S.set.theme)}</select><label>Font</label><select id="fn">${o({sys:'Sistem',rot:'Rotunjit',ser:'Serif',eleg:'Elegant',mono:'Mono'},S.set.font)}</select><label>Categorii</label><div id="cm"></div><button class="b" id="ca" style="margin-top:6px">+ Categorie nouă</button>`;
+m.querySelector('#ac').after(h);
+h.querySelector('#th').onchange=e=>{S.set.theme=e.target.value;theme()};h.querySelector('#fn').onchange=e=>{S.set.font=e.target.value;theme()};
+const cm=()=>{h.querySelector('#cm').innerHTML=S.cats.map(c=>`<div class="r" style="margin:4px 0"><input value="${esc(c.name)}" data-n="${c.id}"><input type="color" value="${c.color}" data-k="${c.id}" style="flex:0 0 40px"></div>`).join('')};cm();
+h.oninput=e=>{const d=e.target.dataset,c=S.cats.find(x=>x.id==(d.n||d.k));if(!c)return;if(d.n)c.name=e.target.value;else c.color=e.target.value;save()};
+h.querySelector('#ca').onclick=()=>{S.cats.push({id:'c'+Date.now().toString(36),name:'Nouă',color:'#8d6e63'});save();cm()}}
+(()=>{let D=null;const f=m=>pad(Math.floor(m/60))+':'+pad(m%60);
+document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('.ev');if(!el||e.button>0)return;D={el,x:e.clientX,y:e.clientY,rz:!!e.target.closest('.rz'),on:false,id:el.dataset.e,h:el.offsetHeight}});
+document.addEventListener('pointermove',e=>{if(!D)return;const dx=e.clientX-D.x,dy=e.clientY-D.y;if(!D.on&&Math.hypot(dx,dy)<8)return;D.on=true;window._dg=1;D.el.style.zIndex=9;D.el.style.opacity=.8;
+if(D.rz)D.el.style.height=Math.max(14,D.h+dy)+'px';else D.el.style.transform=`translate(${dx}px,${dy}px)`;e.preventDefault()},{passive:false});
+document.addEventListener('pointercancel',()=>{if(D){D=null;window._dg=0;render()}});
+document.addEventListener('pointerup',e=>{if(!D)return;const o=D;D=null;if(!o.on)return;setTimeout(()=>window._dg=0,150);
+const ev=S.events.find(x=>x.id==o.id);if(!ev){render();return}
+const dm=Math.round(((e.clientY-o.y)/H*60)/15)*15,s0=mins(ev.start),en=mins(ev.end||ev.start);
+if(o.rz)ev.end=f(Math.min(1439,Math.max(s0+15,en+dm)));
+else{const dur=Math.max(15,en-s0),ns=Math.min(1439-dur,Math.max(0,s0+dm));ev.start=f(ns);ev.end=f(ns+dur);
+if(!ev.rep){const c=document.elementsFromPoint(e.clientX,e.clientY).find(x=>x.classList&&x.classList.contains('col'));if(c)ev.date=c.dataset.d}}
+save();render()})})();
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+render();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script></body></html>
